@@ -1,0 +1,25 @@
+language: python
+python:
+  - "3.6"
+
+sudo: required
+
+dist: trusty
+
+install:
+  - make install
+
+before_script:
+  - pdflatex --version
+
+script:
+  # make twice for all references to settle in
+  - make toml.pdf && rm toml.pdf && make toml.pdf
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_OAUTH_TOKEN
+  file: toml.pdf
+  skip_cleanup: true
+  on:
+    tags: true
