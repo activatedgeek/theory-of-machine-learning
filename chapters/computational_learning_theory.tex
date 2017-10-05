@@ -1,0 +1,125 @@
+\documentclass[../main]{subfiles}
+
+\begin{document}
+\chapter{Computational Learning Theory}
+
+\section{The Statistical Framework}
+
+This section sets up some basic definitions and a standard statistical framework for
+supervised learning theory.
+
+\textbf{Input} is a finite set of pairs of instances $S = \{(x_1,x_2,\ldots,x_m)\}$ from
+$\cursive{X} \times \cursive{Y}$. More familiarly, this is called the training data where
+each instance $x_i$ has a corresponding label $y_i$. Each pair can be treated as
+values of random variables $(X_i,Y_i)$ that are independent and identically distributed
+(i.i.d) according to a fixed probability distribution $D$ over $\cursive{X} \times 
+\cursive{Y}$. It is also assumed that any future instance seen will follow the same
+distribution $D$.
+
+\textbf{Output} is a function $h: \cursive{X} \mapsto \cursive{Y}$ such that it generalizes
+over unseen instances $x_j \in \cursive{X}$. An algorithm that does this can also be
+called the ``\textit{learner}". The set of all such hypotheses that the algorithm might
+learn is known as the \textit{Hypothesis Set H}.
+
+\textbf{Objective} of the function learned above is to find a good hypothesis. More
+formally, we define a loss function $\cursive{L}: \cursive{Y} \times \cursive{Y} \mapsto 
+\mathbb{R}$ which measures how far is $h(x)$ from the desired label $y$. The true
+risk over the probability distribution is then defined by
+
+\begin{definition}[True Risk] \label{def:true_risk}
+\begin{align}
+R(h) = \int_{\cursive{X} \times \cursive{Y}} \cursive{L}(h(x),y) dD(x,y)
+\end{align}
+\end{definition}
+
+
+And herein lies our challenge, $P$ is unknown and all we have is the sample set $S$.
+Therefore, the ``\textit{learner's}" objective is to minimize this risk without being able
+to evaluate it directly. The definition of $\cursive{L}$ varies across problems and will
+have a due discussion.
+
+\section{Error Generalities}
+
+$R(h)$ cannot be directly evaluated as we've already realized from Definition
+\ref{def:true_risk}. Instead, we define a measurable quantity called the \textit{empirical 
+risk}.
+
+\subsection{Empirical Risk}
+
+\begin{definition}[Empirical Risk] \label{def:emp_risk}
+\begin{align}
+\hat{R}(h) = \frac{1}{m} \sum_{i=1}^{m} \cursive{L}(h(x_i),y_i)
+\end{align}
+\end{definition}
+
+The approach of minimizing $\hat{R}$ is called \textit{Empirical Risk Minimization (ERM)}
+which is effectively minimizing the loss over given sample set of size $m$. In general, 
+\textit{ERM} is a computationally hard task a
+
+Now, we define \textit{Bayes Risk} as the minimum possible risk over all possible
+measurable hypotheses $h$ (even outside the selected Hypothesis set $H$).
+
+\subsection{Bayes Risk and Noise}
+
+\begin{definition}[Bayes Risk] \label{def:bayes_risk}
+\begin{align}
+R^\star = \underset{h (\text{all possibly measurable})}{inf} R(h)
+\end{align}
+\end{definition}
+
+Note that $R^\star = 0$ in deterministic cases. As an example consider the \textit{Bayes}
+classifier. The hypothesis can be written in terms of the conditional probabilities as
+
+\begin{definition}[Bayes Hypothesis] \label{def:bayes_hypothesis}
+\begin{align}
+\forall x \in \cursive{X}, h_{Bayes}(x) = \underset{y\in\{0,1\}}{argmax} (Pr[y|x])
+\end{align}
+\end{definition}
+
+In simple words, in a classification problem, the class with the higher probability is the
+one that is chosen which, falls in line with our intuition. And this leads us to the definition
+that wherever a \textit{Bayes Classifier} errs, is noise.
+
+\begin{definition}[Noise] \label{def:noise}
+\begin{align}
+\forall x \in \cursive{X}, noise(x) = \underset{y\in\{0,1\}}{min} (Pr[y|x])
+\end{align}
+\end{definition}
+
+It should be intuitive to see that when the noise is close to $1/2$, the learned hypothesis
+is only as good as flipping a coin.
+
+\subsection{Risk Decomposition}
+
+There always exists a \textit{best-in-class} hypothesis $h^\star$ such that the error is
+minimal. Equivalently, the \textit{best-in-class} Hypothesis (limited to the the hypotheses
+in the hypothesis set $H$) is defined as
+
+\begin{definition}[\textit{Best-in-Class} Hypothesis]
+\begin{align}
+R(h^\star) = \underset{h \in H}{min} R(h)
+\end{align}
+\end{definition}
+
+Now we compare, the risk of the hypothesis $h$ given by our learning algorithm to the
+Bayes risk.
+
+\begin{align}
+R(h) - R^\star = \underbrace{\left[R(h) - R(h^\star)\right]}_{estimation} + \underbrace{\left[ R(h^\star) - R^\star \right]}_{approximation}
+\end{align}
+
+Again, note that \textit{approximation error} cannot be measured and hence all we
+are left with is minimizing the \textit{estimation error} in practice. Hence, let us say that
+our ERM routine returned the hypothesis $h_S^{ERM}$,
+
+\begin{align}
+R(h_S^{ERM}) - R(h^\star) &= R(h_S^{ERM}) - \hat{R}(h_S^{ERM}) + \hat{R}(h_S^{ERM}) - R(h^\star) \tag{adding empirical risk for ERM} \\
+&\leq R(h_S^{ERM}) - \hat{R}(h_S^{ERM}) + \hat{R}(h^\star) - R(h^\star) \tag{$\hat{R}(h_S^{ERM}) \leq \hat{R}(h^\star)$ by definition} \\
+&\leq 2 \underset{h \in H}{sup} | \hat{R}(h) - R(h) |
+\end{align}
+
+This difference between the \textit{risk} and the \textit{empirical risk} is known as the
+\textit{generalization error}. Proving \textit{Uniform Convergence Bound} on the
+\textit{generalization error} is exactly the aim of \textit{Computational Learning Theory}.
+In simpler terms, it tries to answer the question ``What is learnable and how well?".
+\end{document}

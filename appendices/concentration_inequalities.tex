@@ -1,0 +1,90 @@
+\documentclass[../main]{subfiles}
+
+\begin{document}
+\chapter{Concentration Inequalities}
+
+This chapter contains concentration inequalities with proofs which are useful in proving
+bounds throughout the text.
+
+\section{Markov's Inequality}
+
+\begin{theorem}[Markov's Inequality] \label{th:markov_inq}
+Let $X$ be a non-negative random variable with finite expectation ($E[X] < \infty$), then
+for all $t>0$
+\begin{align}
+Pr\left[X \geq tE[X]\right] \leq \frac{1}{t}
+\end{align}
+\begin{proof}
+\begin{align}
+Pr\left[X \geq tE[X]\right] &= \sum_{x \geq tE[X]} Pr[X = x] \nonumber \\
+&\leq \sum_{x \geq tE[X]} Pr[X = x] \frac{x}{tE[X]} \tag{by definition $x \geq tE[X]$} \\
+&\leq \frac{1}{tE[X]} \sum_{x \geq tE[X]} xPr[X = x] \nonumber \\
+&\leq \frac{1}{t}
+\end{align}
+\end{proof}
+\end{theorem}
+
+\section{Chernoff's Bound}
+
+\begin{theorem}[Chernoff's Bound] \label{th:chernoff_bound}
+Let $X$ be a random variable, then for any $t>0$,
+\begin{align}
+Pr[X \geq \epsilon] = Pr[e^{tX} \geq e^{t\epsilon}] \leq e^{-t\epsilon} E[e^{tX}]
+\end{align}
+\end{theorem}
+
+\begin{proof}
+The equality comes from the the monotonicity of $e^x$ and then is a direct application
+of the \textit{Markov's Inequality}.
+\end{proof}
+
+\section{Chebyshev's Inequality}
+\begin{theorem}[Chebyshev's Inequality] \label{th:chebyshev_inq}
+Let $X$ be a random variable with finite variance ($\sigma_X < \infty$), then for all $t>0$
+\begin{align}
+Pr\left[ |X-E[X]| \geq t\sigma_X \right] \leq \frac{1}{t^2}
+\end{align}
+\end{theorem}
+
+\begin{proof}
+Since all terms are non-negative, it is easy to observe that
+\begin{align}
+Pr\left[ |X-E[X]| \geq t\sigma_X \right] &= Pr\left[ \left(X-E[X]\right)^2 \geq t^2 \sigma_X^2 \right] \nonumber \\
+E\left[ \left(X-E[X]\right)^2 \right] &= \sigma_X^2 \tag{by definition of Variance} \\
+\implies &\leq \frac{1}{t^2} \tag{by Markov's Inequality}
+\end{align}
+\end{proof}
+
+\section{Hoeffding's Inequality}
+\begin{theorem}[Hoeffding's Inequality] \label{th:hoeffding_inq}
+Let $X_1, X_2, \ldots X_m$ be independent random variables with $X_i$ taking values
+in $[a_i,b_i] \forall i \in [1,m]$, then for any $\epsilon > 0$, the following inequalities hold
+for $S_m = \sum_{i=1}^{m} X_i$
+\begin{align}
+Pr[S_m - E[S_m] \geq \epsilon] &\leq e^{- 2\epsilon^2 / \sum_{i=1}^m (b_i - a_i)^2} \\
+Pr[S_m - E[S_m] \leq -\epsilon] &\leq e^{- 2\epsilon^2 / \sum_{i=1}^m (b_i - a_i)^2}
+\end{align}
+\end{theorem}
+\begin{proof}
+TODO
+\end{proof}
+
+\section{McDiarmid's Inequality}
+\begin{theorem}[McDiarmid's Inequality] \label{th:mcdiarmids_inq}
+Let $X_1, X_2, \ldots, X_m$ be a set of $m$ independent random variables and assume
+that there exists $c_1,c_2,\ldots,c_m > 0$ such that $f: \cursive{X}^m \mapsto \mathbb{R}$
+satisfies the following conditions:
+\begin{align}
+\left| f(x_1,\ldots,x_i,\ldots,x_m) - f(x_1,\ldots,x_i^\prime,\ldots,x_m) \right| \leq c_i
+\end{align}
+for all $i \in [1,m]$ and any points $x_1,\ldots,x_i,\ldots,x_m \in \cursive{X}$. Let $f(S)$
+denote $f(X_1,X_2,\ldots,X_m)$, then for all $\epsilon > 0$
+\begin{align}
+Pr\left[ f(S) - E[f(S)] \geq \epsilon \right] \leq e^{-2\epsilon^2 / \sum_{i=1}^{m} c_i^2} \\
+Pr\left[ f(S) - E[f(S)] \leq -\epsilon \right] \leq e^{-2\epsilon^2 / \sum_{i=1}^{m} c_i^2}
+\end{align}
+\end{theorem}
+\begin{proof}
+TODO
+\end{proof}
+\end{document}

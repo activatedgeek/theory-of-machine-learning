@@ -1,0 +1,155 @@
+\documentclass[../main]{subfiles}
+
+\begin{document}
+\chapter{Rademacher Complexity}
+
+Until now, we've only covered cases when the \textit{Hypothesis Set} is finite. We will
+now extend the discussion to infinite sets. A general idea consists of reducing the
+infinite hypotheses to a finite set of hypotheses. The reduction generally relies on
+some kind of complexity analysis and \textit{Rademacher Complexity} being one of
+them will be the subject of this chapter.
+
+\section{Empirical Rademacher Complexity}
+
+\begin{definition}[Empirical Rademacher Complexity]
+Let $G$ be a family of functions mapping from $Z$ to $[a,b]$ and $S = \{z_1,z_2,
+\ldots,z_m\}$ a fixed sample of size $m$. Then, the empirical Rademacher Complexity
+of $G$ with respect to the sample S is defined as
+\begin{align}
+\hat{\cursive{R}}_S(G) = \underset{\sigma}{E}\left[ \underset{g \in G}{sup} \frac{1}{m} \sum_{i=1}^{m} \sigma_i g(z_i) \right] \label{def:emp_rademacher_complexity}
+\end{align}
+where $\sigma_i$'s are independent uniform random variables taking values in
+$\{+1,-1\}$. It can also be written in vectorized form as
+\begin{align}
+\hat{\cursive{R}}_S(G) = \underset{\sigma}{E}\left[ \underset{g \in G}{sup} \frac{\sigma.g_S}{m} \right]
+\end{align}
+\end{definition}
+
+$G$ can also be interpreted as a family of loss functions associated with $H$. The dot
+production can be intuitively seen as the correlation of a given function $g$ with 
+random noise $\sigma$ and measures how well the function class $G$ correlates
+with the sample set $S$. Until now, all our analyses have been independent of the nature 
+of the distribution but now observe that richer the family $G$, the better it can correlate 
+with random noise on average.
+
+\section{Rademacher Complexity}
+\begin{definition}[Rademacher Complexity] \label{def:rademacher_complexity}
+\begin{align}
+\cursive{R}_m(G) = \underset{S \sim D^m}{E}[\hat{\cursive{R}}_S(G)] 
+\end{align}
+\end{definition}
+\begin{proof}
+This should be equivalent to the arguments made in Theorem \ref{th:exp_emp_risk}.
+\end{proof}
+
+\begin{theorem} \label{th:rademacher_complexity}
+Let $G$ be a family of functions mapping from $Z$ to $[0,1]$. Then for any $\delta>0$,
+with probability at least $1-\delta$ each of the following holds for all $g \in G$
+\begin{align}
+E[g(z)] \leq \hat{E}_S[g(z)] + 2\cursive{R}_m(G) + \sqrt{\frac{log\frac{1}{\delta}}{2m}} \label{eq:th:rademacher_1} \\
+E[g(z)] \leq \hat{E}_S[g(z)] + 2\hat{\cursive{R}}_S(G) + 3\sqrt{\frac{log\frac{2}{\delta}}{2m}} \label{eq:th:rademacher_2}
+\end{align}
+where $\hat{E}_S[g(z)] = \frac{1}{m} \sum_{i=1}^{m} g(z_i)$ is the empirical average over
+sample set $S$.
+\end{theorem}
+\begin{proof}
+Define a function $\Phi(S) = \underset{g \in G}{sup} E[g] - \hat{E}_S[g]$. Now consider
+two sample sets $S$ and $S^\prime$ which differ only at one instance $z_m$ and $z_m^
+\prime$. Then we have
+\begin{align}
+\Phi(S) - \Phi(S^\prime) &\leq \underset{g \in G}{sup} \hat{E}_S[g] - \hat{E}_{S^\prime}[g] \nonumber \\
+&\leq \underset{g \in G}{sup} \frac{g(z_m) - g(z_m^\prime}{m}) \nonumber \\
+&\leq \frac{1}{m}
+\end{align}
+Similarly $\Phi(S^\prime) - \Phi(S) \leq \frac{1}{m}$ and hence, $\left| \Phi(S) - \Phi(S^\prime)\right| \leq \frac{1}{m}$
+
+Using \textit{McDiarmid's Inequality}, for any $\delta > 0$, with probability at least
+$1-\frac{\delta}{2}$ and setting $\frac{\delta}{2} = e^{-2m\epsilon^2}$, the following holds
+\begin{align}
+\Phi(S) \leq \underset{S}{E}[\Phi(S)] + \sqrt{\frac{log\frac{2}{\delta}}{2m}} \label{eq:ramemacher_proof_phi}
+\end{align}
+
+We now bound the term $\underset{S}{E}[\Phi(S)]$
+\begin{align}
+\underset{S}{E}[\Phi(S)] &= \underset{S}{E}\left[\underset{g\in G}{sup} E[g] - \hat{E}_S[g]\right] \tag{by definition}\\
+&= \underset{S}{E}\left[\underset{g\in G}{sup} \underset{S^\prime}{E} \left [\hat{E}_{S^\prime}[g] - \hat{E}_S[g] \right] \right] \tag{$S$ and $S^\prime$ independent, $E[g] = \underset{S^\prime}{E}\left[\hat{E}_{S^\prime}[g]\right]$} \\
+&\leq \underset{S,S^\prime}{E}\left[ \underset{g\in G}{sup} \hat{E}_{S^\prime}[g] - \hat{E}_S[g] \right] \tag{by Jensen's Inequality} \\
+&= \underset{S,S^\prime}{E}\left[ \underset{g\in G}{sup} \frac{1}{m} \sum_{i=1}^{m} g(z_i) - g(z_i^\prime) \right] \tag{by definition} \\
+&= \underset{\sigma,S,S^\prime}{E}\left[ \underset{g\in G}{sup} \frac{1}{m} \sum_{i=1}^{m} \sigma_i ( g(z_i) - g(z_i^\prime)) \right] \tag{Rademacher variables don't affect overall expectation} \\
+&\leq \underset{\sigma,S}{E}\left[ \underset{g\in G}{sup} \frac{1}{m} \sum_{i=1}^{m} \sigma_i g(z_i) \right] + \underset{\sigma,S^\prime}{E}\left[ \underset{g\in G}{sup} \frac{1}{m} \sum_{i=1}^{m} -\sigma_i g(z_i^\prime) \right] \tag{by sub-additivity of supremum} \\
+&= 2\cursive{R}_m(G) \tag{$\sigma$ and $-\sigma$ are distributed the same way}
+\end{align}
+
+Putting this back in Equation \ref{eq:ramemacher_proof_phi}, we get the desired result
+of Equation \ref{eq:th:rademacher_1}. Note that we have arrived at a result for
+$\frac{\delta}{2}$ but that is trivially replaceable by $\delta$.
+
+Again, by the same \textit{McDiarmid's Inequality} proposition, we can find a relation
+between \textit{Rademacher Complexity} and its empirical variant by virtue of Definition
+\ref{def:rademacher_complexity}. We observe that changing one point in sample $S$, 
+changes $\hat{\cursive{R}}_S(G)$ by at most $\frac{1}{m}$. As a result with probability
+$1 - \frac{\delta}{2}$
+\begin{align}
+\cursive{R}_m(G) \leq \hat{\cursive{R}}_S(G) + \sqrt{\frac{log\frac{2}{\delta}}{2m}} \label{eq:emp_ramemacher_proof}
+\end{align}
+
+Combining Equations \ref{eq:ramemacher_proof_phi} and \ref{eq:emp_ramemacher_proof}
+and using the Union Bound (one should now realize why we used $\frac{\delta}{2}$ instead
+of $\delta$), we have with probability $1-\delta$,
+
+\begin{align}
+\Phi(S) \leq 2\hat{\cursive{R}}_S(G) + 3\sqrt{\frac{log\frac{2}{\delta}}{2m}}
+\end{align}
+
+\end{proof}
+
+\section{Relation to Hypothesis Sets}
+
+While we have established the new notion of Rademacher complexity, we still haven't
+gone back to our original learning problem where we had an infinite Hypothesis Set
+and needed to find \textit{generalization bounds}.
+
+The following lemma provides a relation of the \textit{Rademacher Complexity} to the
+\textit{Hypothesis Set} with binary loss function.
+
+\begin{lemma} \label{lem:rademacher_hyposets}
+Let H be a family of functions taking values in $\{+1,-1\}$ and let G be a family of loss
+functions associated with $H$, $G = \{(x,y) \mapsto 1_{h(x)\neq y} : h \in H$. For any
+sample set $S$ of elements in $\cursive{X} \times \{+1,-1\}$, let $S_{\cursive{X}}$ denote
+its projection over $\cursive{X}$, then
+\begin{align}
+\hat{\cursive{R}}_S(G) = \frac{1}{2}\hat{\cursive{R}}_{S_{\cursive{X}}}(H)\\
+\cursive{R}_m(G) = \frac{1}{2}\cursive{R}_m(H)
+\end{align}
+\end{lemma}
+\begin{proof}
+\begin{align}
+\hat{\cursive{R}}_S(G) &= \underset{\sigma}{E}\left[ \underset{g \in G}{sup} \frac{1}{m} \sum_{i=1}^{m} \sigma_i 1_{h(x_i)\neq y_i} \right] \tag{by Definition \ref{def:emp_rademacher_complexity}} \\
+&= \underset{\sigma}{E}\left[ \underset{g \in G}{sup} \frac{1}{m} \sum_{i=1}^{m} \sigma_i \frac{1 - y_ih(x_i)}{2} \right] \nonumber \\
+&= \frac{1}{2} \underset{\sigma}{E}\left[ \underset{g \in G}{sup} \frac{1}{m} \sum_{i=1}^{m} -\sigma_i y_ih(x_i) \right] \nonumber \\
+&= \frac{1}{2} \underset{\sigma}{E}\left[ \underset{g \in G}{sup} \frac{1}{m} \sum_{i=1}^{m} \sigma_i h(x_i) \right] \tag{$\sigma_i$ and $-\sigma_iy_i$ are distributed same way} \\
+&= \frac{1}{2} \hat{\cursive{R}}_{S_{\cursive{X}}}(H)
+\end{align}
+
+Taking expectation over the complete sample set space both sides should give us the
+second relation as well.
+\end{proof}
+
+\begin{theorem}[Rademacher Complexity Bounds - Binary Classification] \label{th:rademacher_bounds_binary_classification}
+Let H be a family of functions taking values in $\{+1,-1\}$ and let $D$ be the distribution
+over input space \cursive{X}. Then, for any $\delta>0$, with probability at least $1-\delta$,
+over a sample $S$ of size $m$, the following holds for all $h \in H$.
+\begin{align}
+R(h) \leq \hat{R}(h) + \cursive{R}_m(H) + \sqrt{\frac{log\frac{1}{\delta}}{2m}} \\
+R(h) \leq \hat{R}(h) + \hat{\cursive{R}}_S(H) + 3\sqrt{\frac{log\frac{2}{\delta}}{2m}}
+\end{align}
+\end{theorem}
+\begin{proof}
+This directly follows from Lemma \ref{lem:rademacher_hyposets} and Theorem
+\ref{th:rademacher_complexity}.
+\end{proof}
+
+But again, the calculation of $R(h) \leq \hat{R}(h) + \cursive{R}_m(H) + \sqrt{\frac{log\frac{1}
+{\delta}}{2m}}$ is a computationally hard problem for some cases. As a result, in the next
+chapters, we will introduce combinatorial measures that are easier to compute.
+\end{document}

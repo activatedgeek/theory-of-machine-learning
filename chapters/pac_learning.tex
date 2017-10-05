@@ -1,0 +1,176 @@
+\documentclass[../main]{subfiles}
+
+\begin{document}
+\chapter{PAC Learning}
+
+We are in search of a general model of learning and let's start with the simplest but
+strongest of all.
+
+\section{The PAC Learning Model}
+
+\begin{definition}[Concept Class] \label{def:concept_class}
+A concept $\textit{c}: \cursive{X} \to \cursive{Y}$ is a mapping from \cursive{X} to 
+\cursive{Y}. The set of all such concepts $C = \{\textit{c}: \cursive{X} \to \cursive{Y}\}$
+is called the \textit{Concept Class}.
+\end{definition}
+
+To motivate the definition, let us say you want to learn the concept of a ``fit person". I
+independently run push-up trials on people and measure push-ups per minute along
+with the peak heart rate. Those instances correspond to \cursive{X}. I also tell you
+my corresponding evaluation (I am the oracle) - is the person fit or not, the label
+\cursive{Y}. As I keep revealing more data, you keep refining your knowledge of a
+``fit person" somehow. All the mappings that you must have created during this process 
+are collectively part of what we called the ``\textit{Concept Class}".
+
+But you are not lucky enough to have an oracle like me all the time. This is when you
+should realize that you might never be able to see data from all the trials that I conducted
+and hence start ``hypothesizing" about the best possible mapping, forming the \textit{Hypothesis Set}.
+
+More formally, the learner can sample a finite amount of data from a fixed but unknown
+distribution $D$ and considers a finite set of hypotheses from the \textit{Hypothesis Set}
+$H$ which may or may not coincide with \textit{Concept Class} $C$. We can discretize
+the definitions in \ref{def:true_risk} and \ref{def:emp_risk} for a binary classification 
+problem.
+
+\begin{align}
+R(h) &= \underset{x \sim D}{Pr}[h(x) \neq c(x)] = \underset{x \sim D}{E}[1_{h(x) \neq c(x)}] \nonumber \\
+\hat{R}(h) &= \frac{1}{m} \sum_{i=1}^{m} 1_{h(x_i) \neq c(x_i)}
+\end{align}
+
+A simple but immediately important result can be derived now.
+
+\begin{theorem} \label{th:exp_emp_risk}
+\begin{align}
+E[\hat{R}(h)] &= R(h)
+\end{align}
+\end{theorem}
+
+\begin{proof}
+\begin{align}
+E[\hat{R}(h)] &= E[\frac{1}{m} \sum_{i=1}^{m} 1_{h(x_i) \neq c(x_i)}] \nonumber \\
+&= \frac{1}{m} \sum_{i=1}^{m} E[1_{h(x_i) \neq c(x_i)}] \tag*{(Linearity of Expectation)} \nonumber \\
+&= \frac{1}{m} \sum_{i=1}^{m} E[1_{h(x) \neq c(x)}] \tag*{(x are i.i.d)} \nonumber \\
+E[\hat{R}(h)] &= R(h) \nonumber
+\end{align}
+
+All \textit{instances} from the distribution are independent and which sample $S$ contains
+that instance is irrelevant. Expectation on the \textit{empirical error} effectively means
+considering all such possible samples $S$ and averaging the error over each. This
+scenario is then equivalent to observing the exhaustive data set and hence the true risk
+over the complete distribution.
+\end{proof}
+
+We will now present the first strong theoretical guarantee.
+
+\begin{definition}(PAC-Learning) \label{def:pac_learning}
+A concept class $C$ is said to be PAC-learnable if there exists an algorithm \cursive{A}
+such that for any $\epsilon > 0$ and $\delta > 0$, for all distributions $D$ on \cursive{X}
+and for any target concept $c \in C$, the following holds for any sample size
+$m \geq poly(1/\epsilon,1/\delta,n,size(c))$
+\begin{align}
+\underset{S \sim D^m}{Pr}[R(h_S) \leq \epsilon] \geq 1 - \delta \label{eq:pac_learning}
+\end{align}
+If further \cursive{A} also runs in $poly(1/\epsilon,1/\delta,n,size(c))$, then $C$ is said to
+be PAC-learnable.
+\end{definition}
+
+This is a crufty definition, but let us break it down into the two pieces - The hypothesis
+returned by the algorithm \cursive{A} is ``\textit{approximately correct}" with an error at
+most $\epsilon$ and high ``\textit{probability}" confidence $ 1 - \delta $. All this should
+happen within reasonable size of the sample size $m$. A tricky part is the fact that we
+learn a ``\textit{Concept Class}" and never a ``\textit{concept}". It is worth revisiting the
+example presented along with \ref{def:concept_class} to get this clarified once and for all.
+
+It is a strong guarantee because \textit{PAC-learning} doesn't enforce any assumption
+on the distribution. It turns out that due to the strong requirements of the \textit{PAC 
+Learning Framework}, it is usually difficult to find and prove a generic algorithm 
+\cursive{A} which will satisfy all the constraints and the guarantees. We therefore
+introduce more theoretical tools.
+
+\section{Finite Hypothesis Sets}
+
+Until now, we have not presented any constraints on the the size of \textit{Hypothesis
+Set} $H$. Let us say that the cardinality $|H|$ is finite. It goes without saying that the
+target concept $c \in C$ belongs to $H$ as well else we have by definition stated that 
+the \textit{Concept Class} is not learnable.
+
+\subsection{Consistent Case}
+
+\begin{theorem}[Learning Bounds for finite $H$ with consistent hypothesis]
+Let $H$ be a finite set of functions mapping \cursive{X} to \cursive{Y}. Let \cursive{A}
+be an algorithm that for any target concept $c \in H$ and a sample $S$ returns a
+consistent hypothesis $h_S: \hat{R}(h_S) = 0$. Then for any $\epsilon, \delta > 0$,
+Equation \ref{eq:pac_learning} holds if
+\begin{align}
+m \geq \frac{1}{\epsilon} \left( |H| + log\frac{1}{\delta}\right) \label{th:fh_consistent_1}
+\end{align}
+This result also equivalently admits the following generalization bound
+\begin{align}
+R(h_S) \leq \frac{1}{m} \left( |H| + log\frac{1}{\delta}\right) \label{th:fh_consistent_2}
+\end{align}
+\end{theorem}
+
+\begin{proof}
+Fix $\epsilon > 0$. Now we must find a \textit{Uniform Convergence Bound} that is
+valid for all distributions and all consistent hypotheses returned by the algorithm.
+Formally, this can be written as
+\begin{align}
+Pr[\exists h \in H: \hat{R}(h) = 0 \land R(h) > \epsilon] &\leq \sum_{h \in H} Pr[\hat{R}(h) = 0 \land R(h) > \epsilon] \tag{by the Union Bound} \\
+&\leq \sum_{h \in H} Pr[\hat{R}(h) = 0 \land R(h) > \epsilon] \tag{by Conditional Probability} \\
+&\leq |H| (1-\epsilon)^m \tag{probability of no error on a point in S} \\
+&\leq |H| e^{-\epsilon m} \tag{$\because 1-x\leq e^{-x}$}
+\end{align}
+
+Setting $\delta = |H| e^{-\epsilon m}$ should give us the desired result.
+\end{proof}
+
+Intuitively from Equation \ref{th:fh_consistent_1}, observe that when we demand an
+increase in accuracy (or decrease in the error $\epsilon$) or increase in confidence
+(decrease in $\delta$), the lower bound on $m$ increases.
+
+On the other hand from Equation \ref{th:fh_consistent_2}, increase in the number of
+instances $m$ in the sample set leads to a lower generalization bound, which is what
+we might generally expect - more data, better learning.
+
+\subsection{Inconsistent Case}
+
+Inconsistent cases are typical in practice where the learning problem is more
+difficult and the \textit{concept class} will generally be more complex than the
+\textit{hypothesis set} used by the learning algorithm.
+
+\begin{theorem}[Learning bounds for finite $H$ with inconsistent hypothesis]
+Let H be a finite hypothesis set. Then for any $\delta > 0$, with probability at least 
+$1-\delta$, the following inequality holds
+\begin{align}
+\forall \text{ } h \in H, R(h) \leq \hat{R}(h) + \sqrt{\frac{log |H| + log \frac{2}{\delta}}{2m}}
+\end{align}
+\end{theorem}
+
+\begin{proof}
+TODO
+\end{proof}
+
+One immediate observation now is that we need quadratically larger number of instances
+in the sample set than the consistent case.
+
+\section{Agnostic PAC Learning}
+
+A natural extension of the PAC Learning framework is when instead of the labels being
+deterministic and discriminative, they could be generative. For instead, the labels
+returned by the learning algorithm could be interpreted as a probability distribution
+for the output taking one of the many possible values. Such a stochastic scenario is
+covered by the generalization below.
+
+\begin{definition}(Agnostic PAC Learning) \label{def:agnostic_pac}
+Let $H$ be a hypothesis set. \cursive{A} is an agnostic PAC-learning algorithm if there
+exists a polynomial function such that for any $\epsilon, \delta > 0$, for all distributions
+\cursive{D} over $\cursive{X} \times \cursive{Y}$, the following holds for any sample
+size $m \geq poly(1/\epsilon,1/\delta,n,size(c))$:
+\begin{align}
+\underset{S \sim D^m}{Pr} \left[ R(h_S) - \underset{h \in H}{min} R(h) \leq \epsilon  \right] \geq 1-\delta
+\end{align}
+
+If \cursive{A} runs in $poly(1/\epsilon,1/\delta,n,size(c))$, then it is said to be an efficient
+agnostic PAC learning algorithm.
+\end{definition}
+\end{document}
