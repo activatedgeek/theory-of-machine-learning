@@ -3,7 +3,7 @@
 
 install:
 	# @sudo apt-get install textlive-full
-	@sudo apt-get install texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra
+	@sudo apt-get install texlive-latex-base texlive-latex-extra texlive-science texlive-fonts-recommended texlive-fonts-extra
 
 clean:
 	@rm -rf *.aux *.log *.pdf *.toc *.out
