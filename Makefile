@@ -6,6 +6,7 @@ install:
 	@sudo apt-get install texlive-latex-base texlive-latex-extra texlive-science texlive-fonts-recommended texlive-fonts-extra
 
 clean:
-	@rm -rf *.aux *.log *.pdf *.toc *.out
+	@find . \( -name "*.aux" -o -name "*.log" -o -name "*.out" -o -name "*.toc" \) -type f -delete
+	@find . -name "*.pdf" -type f -delete
 
 .PHONY: install clean

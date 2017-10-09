@@ -1,4 +1,4 @@
-\documentclass[../main]{subfiles}
+\documentclass[../toml]{subfiles}
 
 \begin{document}
 \chapter{Rademacher Complexity}
@@ -149,7 +149,78 @@ This directly follows from Lemma \ref{lem:rademacher_hyposets} and Theorem
 \ref{th:rademacher_complexity}.
 \end{proof}
 
-But again, the calculation of $R(h) \leq \hat{R}(h) + \cursive{R}_m(H) + \sqrt{\frac{log\frac{1}
-{\delta}}{2m}}$ is a computationally hard problem for some cases. As a result, in the next
-chapters, we will introduce combinatorial measures that are easier to compute.
+But again, the calculation of $\hat{R}(h)$ is a computationally hard problem for some cases.
+
+\section{Growth Function}
+
+\begin{definition}[Growth Function] \label{def:growth_fn}
+A growth function $\Pi_H: \mathbb{N} \to \mathbb{N}$ for a hypothesis set $H$ is defined
+as
+\begin{align}
+\forall m \in \mathbb{N}, \Pi_H(m) = \underset{\{x_1,x_2,\ldots,x_m\} \subseteq X}{max} \left| \{ \left( h(x_1),h(x_2),\ldots,h(x_m) \right) \} : h \in H \right|
+\end{align}
+\end{definition}
+
+Intuitively, $\Pi_H(m)$ is the maximum number of distinct ways in which $m$ points can
+be classified using set $H$. It should be easy to see that as the hypothesis set gets richer,
+we have more ways of classifying the sample set. But as opposed to the
+\textit{Rademacher Complexity} which relies on the distribution, this measure is purely
+combinatorial.
+
+\begin{theorem}[Massart's lemma] \label{th:massart}
+Let $A \subseteq \mathbb{R}^m$ be a finite set, with $r = \underset{x \in A}{max} || x ||_2$,
+then
+\begin{align}
+\underset{\sigma}{E}\left[ \underset{x \in A}{sup} \frac{1}{m} \sum_{i=1}^{m} \sigma_i x_i \right] \leq \frac{r \sqrt{2 log |A|}}{m}
+\end{align}
+where $\sigma_i$ are independent random variables taking values $\{+1,-1\}$.
+\end{theorem}
+\begin{proof}
+For an arbitrary $t>0$, we will use \textit{Jensen's Inequality} and bound the supremum by
+sum of all terms.
+\begin{align}
+e^{t\underset{\sigma}{E}\left[ \underset{x \in A}{sup} \sum_{i=1}^{m} \sigma_i x_i \right]} 
+&\leq \underset{\sigma}{E}\left[ e^{t\underset{x \in A}{sup} \sum_{i=1}^{m} \sigma_i x_i} \right] \tag{by \textit{Jensen's Inequality}} \\
+&= \underset{\sigma}{E}\left[ \underset{x \in A}{sup} \text{ } e^{\sum_{i=1}^{m} t\sigma_i x_i} \right] \nonumber \\
+&\leq \sum_{x \in A} \underset{\sigma}{E}\left[ \text{ } e^{\sum_{i=1}^{m} t\sigma_i x_i} \right] \tag{bounding supremum by sum of all terms} \\
+&= \sum_{x \in A} \prod_{i=1}^{m} \underset{\sigma_i}{E}\left[ e^{t\sigma_i x_i} \right] \tag{by independence of Expectation} \\
+&\leq \sum_{x \in A} \prod_{i=1}^{m}  e^{\frac{t^2 (2x_i)^2}{8}} \tag{by Hoeffding's Lemma} \\
+&= \sum_{x \in A} e^{\frac{t^2}{2} \sum_{i=1}^{m} x_i^2} \nonumber \\
+&\leq \sum_{x \in A} e^{\frac{t^2r^2}{2}} \tag{by definition of r} \\
+&= |A| e^{\frac{t^2r^2}{2}} \tag{by definition of r} \\
+\implies, \underset{\sigma}{E}\left[ \underset{x \in A}{sup} \sum_{i=1}^{m} \sigma_i x_i \right] &\leq \frac{log |A|}{t} + \frac{tr^2}{2} \label{eq:massart_proof_rhs}
+\end{align}
+
+When we minimize Equation \ref{eq:massart_proof_rhs}, we get $t = \frac{\sqrt{2log|A|}}{r}$.
+Putting it back and dividing by $m$ gives us
+\begin{align}
+\underset{\sigma}{E}\left[ \underset{x \in A}{sup} \frac{1}{m} \sum_{i=1}^{m} \sigma_i x_i \right] \leq \frac{r \sqrt{2 log |A|}}{m}
+\end{align}
+\end{proof}
+
+This leads us to an interesting corollary for Binary Hypotheses.
+
+\begin{corollary} \label{corr:massart}
+Let G be a family of functions taking values in $\{+1,-1\}$, the the following holds
+\begin{align}
+\cursive{R}_m(G) \leq \sqrt{\frac{2log\Pi_G(m)}{m}}
+\end{align}
+\end{corollary}
+\begin{proof}
+We will apply Theorem \ref{th:massart} which provides a bound for the
+\textit{Empirical Rademacher Complexity}. Hence,
+\begin{align}
+\cursive{R}_m(G) &= \underset{S}{E} \left[ \underset{\sigma}{E}\left[ \underset{g \in G_{|S}}{sup} \frac{1}{m} \sum_{i=1}^{m} \sigma_i g(x_i) \right] \right] \tag{by definition of Rademacher Complexity} \\
+&\leq \underset{S}{E} \left[ \frac{\sqrt{m} \sqrt{2 log |G_{|S}|}}{m} \right] \tag{by Massart's Lemma} \\
+&\leq \sqrt{\frac{2log\Pi_G(m)}{m}} \tag{as $|G_{|S}| \leq \Pi_G(m)$}
+\end{align}
+where it is simple to see that norm of any $g(x_i) \leq \sqrt{m}$.
+\end{proof}
+
+This result can now be used with Theorem \ref{th:rademacher_bounds_binary_classification} to provide generalization bounds
+with respect to the growth function.
+
+Unfortunately, despite all efforts we've made, the computation of $\Pi_G(m)$ may
+not always be convenient because it must be computed for all $m \geq 1$. Instead, in the
+next chapters, we will introduce combinatorial measures that are easier to compute and have a direct relation with growth functions.
 \end{document}
