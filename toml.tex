@@ -18,7 +18,7 @@
 \newcommand{\cursive}[1]{{\usefont{T1}{pzc}{m}{n}\selectfont \text{#1}}}
 
 \newtheorem{theorem}{Theorem}[chapter]
-\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{corollary}{Corollary}[chapter]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{definition}{Definition}[chapter]
 
@@ -35,14 +35,14 @@
 
 \part{Theory} \label{part:theory}
 
-\subfile{chapters/computational_learning_theory}
+\subfile{theory/computational_learning_theory}
 
-\subfile{chapters/pac_learning}
+\subfile{theory/pac_learning}
 
-\subfile{chapters/rademacher_complexity}
+\subfile{theory/rademacher_complexity}
 
 \begin{appendices}
-\subfile{appendices/concentration_inequalities}
+\subfile{appendix/concentration_inequalities}
 \end{appendices}
 
 \end{document}

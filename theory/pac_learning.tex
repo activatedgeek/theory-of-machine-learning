@@ -1,4 +1,4 @@
-\documentclass[../main]{subfiles}
+\documentclass[../toml]{subfiles}
 
 \begin{document}
 \chapter{PAC Learning}
@@ -9,7 +9,7 @@ strongest of all.
 \section{The PAC Learning Model}
 
 \begin{definition}[Concept Class] \label{def:concept_class}
-A concept $\textit{c}: \cursive{X} \to \cursive{Y}$ is a mapping from \cursive{X} to 
+A concept $\textit{c}: \cursive{X} \to \cursive{Y}$ is a mapping from \cursive{X} to
 \cursive{Y}. The set of all such concepts $C = \{\textit{c}: \cursive{X} \to \cursive{Y}\}$
 is called the \textit{Concept Class}.
 \end{definition}
@@ -19,7 +19,7 @@ independently run push-up trials on people and measure push-ups per minute along
 with the peak heart rate. Those instances correspond to \cursive{X}. I also tell you
 my corresponding evaluation (I am the oracle) - is the person fit or not, the label
 \cursive{Y}. As I keep revealing more data, you keep refining your knowledge of a
-``fit person" somehow. All the mappings that you must have created during this process 
+``fit person" somehow. All the mappings that you must have created during this process
 are collectively part of what we called the ``\textit{Concept Class}".
 
 But you are not lucky enough to have an oracle like me all the time. This is when you
@@ -29,7 +29,7 @@ and hence start ``hypothesizing" about the best possible mapping, forming the \t
 More formally, the learner can sample a finite amount of data from a fixed but unknown
 distribution $D$ and considers a finite set of hypotheses from the \textit{Hypothesis Set}
 $H$ which may or may not coincide with \textit{Concept Class} $C$. We can discretize
-the definitions in \ref{def:true_risk} and \ref{def:emp_risk} for a binary classification 
+the definitions in \ref{def:true_risk} and \ref{def:emp_risk} for a binary classification
 problem.
 
 \begin{align}
@@ -82,8 +82,8 @@ learn a ``\textit{Concept Class}" and never a ``\textit{concept}". It is worth r
 example presented along with \ref{def:concept_class} to get this clarified once and for all.
 
 It is a strong guarantee because \textit{PAC-learning} doesn't enforce any assumption
-on the distribution. It turns out that due to the strong requirements of the \textit{PAC 
-Learning Framework}, it is usually difficult to find and prove a generic algorithm 
+on the distribution. It turns out that due to the strong requirements of the \textit{PAC
+Learning Framework}, it is usually difficult to find and prove a generic algorithm
 \cursive{A} which will satisfy all the constraints and the guarantees. We therefore
 introduce more theoretical tools.
 
@@ -91,7 +91,7 @@ introduce more theoretical tools.
 
 Until now, we have not presented any constraints on the the size of \textit{Hypothesis
 Set} $H$. Let us say that the cardinality $|H|$ is finite. It goes without saying that the
-target concept $c \in C$ belongs to $H$ as well else we have by definition stated that 
+target concept $c \in C$ belongs to $H$ as well else we have by definition stated that
 the \textit{Concept Class} is not learnable.
 
 \subsection{Consistent Case}
@@ -138,8 +138,26 @@ Inconsistent cases are typical in practice where the learning problem is more
 difficult and the \textit{concept class} will generally be more complex than the
 \textit{hypothesis set} used by the learning algorithm.
 
+\begin{corollary} \label{corr:generalization_bound_single_hypothesis}
+For a fixed $\epsilon > 0$, and an i.i.d sample set $S$ of size $m$, for any
+hypothesis $h: \cursive{X} \to \{0,1\}$, the following inequalities hold
+\begin{align}
+\underset{S \sim D^m}{Pr}\left[ \hat{R}(h) - R(h) \geq \epsilon \right] \leq e^{-2m\epsilon^2} \\
+\underset{S \sim D^m}{Pr}\left[ \hat{R}(h) - R(h) \leq -\epsilon \right] \leq e^{-2m\epsilon^2}
+\end{align}
+By the union bound, we get
+\begin{align}
+\underset{S \sim D^m}{Pr}\left[ |\hat{R}(h) - R(h)| \geq \epsilon \right] \leq 2e^{-2m\epsilon^2}
+\end{align}
+\end{corollary}
+\begin{proof}
+This result follows as a direct implication of \textit{Hoeffding's Inequality}. Setting
+the right hand side of this equation to $\delta$ gives us the inequality for the single
+hypothesis case. A more general result comes next.
+\end{proof}
+
 \begin{theorem}[Learning bounds for finite $H$ with inconsistent hypothesis]
-Let H be a finite hypothesis set. Then for any $\delta > 0$, with probability at least 
+Let H be a finite hypothesis set. Then for any $\delta > 0$, with probability at least
 $1-\delta$, the following inequality holds
 \begin{align}
 \forall \text{ } h \in H, R(h) \leq \hat{R}(h) + \sqrt{\frac{log |H| + log \frac{2}{\delta}}{2m}}
@@ -147,11 +165,19 @@ $1-\delta$, the following inequality holds
 \end{theorem}
 
 \begin{proof}
-TODO
+This proof relies on the result seen in Corollary \ref{corr:generalization_bound_single_hypothesis}. More formally we find the
+probability that the empirical risk deviates from the true risk as
+
+\begin{align}
+Pr\left[ \forall h \in H: |\hat{R}(h) - R(h)| > \epsilon \right] &\leq \sum_{h \in H} Pr\left[|\hat{R}(h) - R(h)| > \epsilon \right] \nonumber \\
+&\leq 2|H|e^{-2m\epsilon^2}
+\end{align}
+
+Setting the right hand side of this result to $\delta$ will give us the desired bound.
 \end{proof}
 
-One immediate observation now is that we need quadratically larger number of instances
-in the sample set than the consistent case.
+One immediate observation now is that we need quadratically larger number of
+instances in the sample set than the consistent case.
 
 \section{Agnostic PAC Learning}
 

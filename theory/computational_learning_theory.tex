@@ -1,4 +1,4 @@
-\documentclass[../main]{subfiles}
+\documentclass[../toml]{subfiles}
 
 \begin{document}
 \chapter{Computational Learning Theory}
@@ -12,7 +12,7 @@ supervised learning theory.
 $\cursive{X} \times \cursive{Y}$. More familiarly, this is called the training data where
 each instance $x_i$ has a corresponding label $y_i$. Each pair can be treated as
 values of random variables $(X_i,Y_i)$ that are independent and identically distributed
-(i.i.d) according to a fixed probability distribution $D$ over $\cursive{X} \times 
+(i.i.d) according to a fixed probability distribution $D$ over $\cursive{X} \times
 \cursive{Y}$. It is also assumed that any future instance seen will follow the same
 distribution $D$.
 
@@ -22,7 +22,7 @@ called the ``\textit{learner}". The set of all such hypotheses that the algorith
 learn is known as the \textit{Hypothesis Set H}.
 
 \textbf{Objective} of the function learned above is to find a good hypothesis. More
-formally, we define a loss function $\cursive{L}: \cursive{Y} \times \cursive{Y} \mapsto 
+formally, we define a loss function $\cursive{L}: \cursive{Y} \times \cursive{Y} \mapsto
 \mathbb{R}$ which measures how far is $h(x)$ from the desired label $y$. The true
 risk over the probability distribution is then defined by
 
@@ -41,7 +41,7 @@ have a due discussion.
 \section{Error Generalities}
 
 $R(h)$ cannot be directly evaluated as we've already realized from Definition
-\ref{def:true_risk}. Instead, we define a measurable quantity called the \textit{empirical 
+\ref{def:true_risk}. Instead, we define a measurable quantity called the \textit{empirical
 risk}.
 
 \subsection{Empirical Risk}
@@ -53,7 +53,7 @@ risk}.
 \end{definition}
 
 The approach of minimizing $\hat{R}$ is called \textit{Empirical Risk Minimization (ERM)}
-which is effectively minimizing the loss over given sample set of size $m$. In general, 
+which is effectively minimizing the loss over given sample set of size $m$. In general,
 \textit{ERM} is a computationally hard task a
 
 Now, we define \textit{Bayes Risk} as the minimum possible risk over all possible

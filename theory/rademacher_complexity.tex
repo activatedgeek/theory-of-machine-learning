@@ -26,16 +26,16 @@ $\{+1,-1\}$. It can also be written in vectorized form as
 \end{definition}
 
 $G$ can also be interpreted as a family of loss functions associated with $H$. The dot
-production can be intuitively seen as the correlation of a given function $g$ with 
+production can be intuitively seen as the correlation of a given function $g$ with
 random noise $\sigma$ and measures how well the function class $G$ correlates
-with the sample set $S$. Until now, all our analyses have been independent of the nature 
-of the distribution but now observe that richer the family $G$, the better it can correlate 
+with the sample set $S$. Until now, all our analyses have been independent of the nature
+of the distribution but now observe that richer the family $G$, the better it can correlate
 with random noise on average.
 
 \section{Rademacher Complexity}
 \begin{definition}[Rademacher Complexity] \label{def:rademacher_complexity}
 \begin{align}
-\cursive{R}_m(G) = \underset{S \sim D^m}{E}[\hat{\cursive{R}}_S(G)] 
+\cursive{R}_m(G) = \underset{S \sim D^m}{E}[\hat{\cursive{R}}_S(G)]
 \end{align}
 \end{definition}
 \begin{proof}
@@ -86,7 +86,7 @@ $\frac{\delta}{2}$ but that is trivially replaceable by $\delta$.
 
 Again, by the same \textit{McDiarmid's Inequality} proposition, we can find a relation
 between \textit{Rademacher Complexity} and its empirical variant by virtue of Definition
-\ref{def:rademacher_complexity}. We observe that changing one point in sample $S$, 
+\ref{def:rademacher_complexity}. We observe that changing one point in sample $S$,
 changes $\hat{\cursive{R}}_S(G)$ by at most $\frac{1}{m}$. As a result with probability
 $1 - \frac{\delta}{2}$
 \begin{align}
@@ -179,7 +179,7 @@ where $\sigma_i$ are independent random variables taking values $\{+1,-1\}$.
 For an arbitrary $t>0$, we will use \textit{Jensen's Inequality} and bound the supremum by
 sum of all terms.
 \begin{align}
-e^{t\underset{\sigma}{E}\left[ \underset{x \in A}{sup} \sum_{i=1}^{m} \sigma_i x_i \right]} 
+e^{t\underset{\sigma}{E}\left[ \underset{x \in A}{sup} \sum_{i=1}^{m} \sigma_i x_i \right]}
 &\leq \underset{\sigma}{E}\left[ e^{t\underset{x \in A}{sup} \sum_{i=1}^{m} \sigma_i x_i} \right] \tag{by \textit{Jensen's Inequality}} \\
 &= \underset{\sigma}{E}\left[ \underset{x \in A}{sup} \text{ } e^{\sum_{i=1}^{m} t\sigma_i x_i} \right] \nonumber \\
 &\leq \sum_{x \in A} \underset{\sigma}{E}\left[ \text{ } e^{\sum_{i=1}^{m} t\sigma_i x_i} \right] \tag{bounding supremum by sum of all terms} \\
